@@ -18,10 +18,15 @@ public class Teatro {
         BianchiAntonio.prenota(platea, 1, 2);
         
         RossiMario.start();
+        /* 
+         * Effettuo dei print intermedi per verificare la corretta gestione della prenotazione, per puri fini diagnostici.
+         * ATTENZIONE: l'accesso in lettura alla struttura dati condivisa, effettuata in forma concorrente,
+         * potrebbe generare un output NON rappresentativo dell'attuale situazione della platea.
+         * Questo perché l'accesso in lettura NON è regolamentata da un semaforo.
+         */
         platea.printMatrix();
         
         VerdiTommaso.start();
-        // Effettuo dei print intermedi per verificare la corretta gestione della prenotazione.
         platea.printMatrix();
         
         BianchiAntonio.start();
@@ -31,7 +36,7 @@ public class Teatro {
         VerdiTommaso.join();
         BianchiAntonio.join();
         
-        // Prima di stampare a video la situazione definitiva della platea, attende che tutti
+        // Prima di stampare a video la situazione DEFINITIVA della platea, attende che tutti
         // i thread abbiamo terminato (join).
         platea.printMatrix();
         

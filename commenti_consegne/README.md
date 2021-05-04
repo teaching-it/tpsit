@@ -1,4 +1,4 @@
-# Esercizio Java: sistema di prenotazione multi-thread
+# Esercizio Java: sistema di prenotazione multi-thread (teatro)
 
 Cari ragazzi,
 

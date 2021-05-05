@@ -6,6 +6,8 @@ di seguito riporto, in forma anonima, alcune implementazioni dell'esercitazione 
 
 Mi auguro riusciate a trovare risposte alle vostre domande (beh, se non a tutte, quanto meno ad alcune!).
 
+***
+
 ## Implementazione 1
 
 ### Classe Teatro
@@ -194,11 +196,13 @@ Sì, capisco che questa soluzione possa essere meno efficiente da un punto di vi
 
 Niente da segnalare: tale e quale all'implementazione condivisa e discussa in classe (semaforo di Dijkstra), che non riporto.
 
+***
+
 ## Implementazione 2
 
-```java
-package teatro;
+### Classe Teatro
 
+```java
 public class Teatro {
 
     public static void main(String[] args) throws InterruptedException {
@@ -244,8 +248,6 @@ Un paio di aspetti da segnalare. Uno più rilevante, l'altro più marginale. Ris
 ### Classe Spettatore
 
 ```java
-package teatro;
-
 public class Spettatore extends Thread {
     private String nome;
     private String cognome;
@@ -287,7 +289,6 @@ Bene la caratterizzazione anagrafica dello spettatore mediante l'impiego del met
 ### Classe Platea
 
 ```java
-package teatro;
 import java.util.*;
 
 public class Platea {
@@ -390,8 +391,6 @@ Quindi, per concludere: occhio ad attivare operazioni di acquisizione da tastier
 ### Classe MySemaphore
 
 ```java
-package teatro;
-
 public class MySemaphore {
 
     public boolean available = true;//lock mutex
@@ -415,13 +414,13 @@ L'implementazione del semaforo è concettualmente appropriata, tuttavia non form
 1. Nel metodo acquire() è presente un ciclo while che, come correttamente commentato, innesca un'attesa attiva dei thread in coda e, di conseguenza, una inefficiente gestione della risorsa più preziosa: la CPU. **Suggerimento:** perché non optare per l'implementazione del semaforo di Dijkstra?
 2. Entrambi i metodi **non** sono "protetti" da eventuali accessi concorrenti e ciò potrebbe condurre a configurazioni esecutive non appropriate o assolutamente indesiderate. **Suggerimento:** utilizzare il qualificatore di metodo synchronized.
 
+***
+
 ## Implementazione 3
 
 ### Classe Teatro
 
 ```java
-package Teatro;
-
 public class Teatro {
     //classe principale
     public static void main(String[] args) throws InterruptedException
@@ -451,13 +450,12 @@ public class Teatro {
 ```
 
 **Osservazioni.**
+
 Nessuna novità sostanziale da segnalare rispetto a quanto già detto in precedenza.
 
 ### Classe Spettatore
 
 ```java
-package Teatro;
-
 public class Spettatore extends Thread 
 {
     //thread
@@ -549,15 +547,13 @@ public class Spettatore extends Thread
 
 ```
 
-**Osservazioni.** 
+**Osservazioni.**
 
-Onestamente non mi è chiaro il motivo dell'overload del costruttore; chiedo scusa all'autore del listato. Ciò nonostante, non risulta niente di particolare da segnalare.
+Onestamente non mi è chiaro il motivo dell'overload del costruttore; chiedo scusa all'autore del listato. Oltre a questo aspetto, non risulta niente di particolare da segnalare.
 
 ### Classe Platea
 
 ```java
-package Teatro;
-
 public class Platea {
     
     //dimensione matrice
@@ -627,8 +623,6 @@ Così come detto in precedenza (si veda commento al metodo prenota dall'implemen
 ### Classe MySemaphore
 
 ```java
-package Teatro;
-
 public class MySemaphore {
     //semaforo 
     boolean available = true;
@@ -653,3 +647,147 @@ public class MySemaphore {
 **Osservazioni.**
 
 Rimando alle osservazioni già esplicitate nella classe MySemaphore dell'implementazione 2. In particolare, occhio ad applicare il qualificatore synchronized anche al metodo release().
+
+***
+
+## Implementazione 4
+
+### Classe Teatro
+
+```java
+public class Teatro {
+
+    public static void main(String[] args) throws Exception{
+        // Utilizziamo l'implementazione del semaforo di Dijkstra contenuto in MySemaphore.java
+        // Nb. l'oggetto MySemaphore è unico, ed è condiviso dai thread Correntista.
+        MySemaphore S = new MySemaphore(1);
+        Platea platea = new Platea(S);
+                
+        Spettatore Mario = new Spettatore("Mario", "Rossi", "mariorossi@gmail.com", "3386598123", platea);
+        Spettatore Luigi = new Spettatore("Luigi", "Pratesi", "luigipratesi@libero.it", "3389835787", platea);
+                
+        Mario.start();
+        Luigi.start();
+                
+        /*
+         * In questo preciso momento, sono attivi 3 thread
+         * Mario, Luigi, main.
+         */
+                
+        Mario.join();
+        Luigi.join();
+                
+        platea.visualizzaMatrice();
+    }
+
+}
+```
+
+**Osservazioni.**
+
+Niente di particolare da segnalare, oltre a quanto già riportato in precedenza.
+
+### Classe Spettatore
+
+```java
+public class Spettatore extends Thread{
+    private String nome;
+    private String cognome;
+    private String email;
+    private String telefono;
+    private Platea p;
+    private Spettatore S;
+    
+    public Spettatore(String nome, String cogn, String mail, String telefono, Platea p) {
+        this.nome = nome;
+        cognome = cogn;
+        email = mail;
+        this.telefono = telefono;
+        this.p = p;
+    }
+    
+    public String getNome() {
+        return nome;
+    }
+    
+    public void run() {
+        p.prenota(S, 12);
+    }
+}
+```
+
+**Osservazioni.**
+
+L'assegnazione del posto in platea è *built-in* all'interno del metodo run(), ovvero: `p.prenota(S, 12);`, dove il valore numerico `12` rappresenta univocamente un posto tra i 25 posti disponibili (matrice 5x5). L'idea è senza dubbio interessante, poiché prevede l'utilizzo di un unico valore numerico, piuttosto che una coppia coordinate (i,j). Ciò nonostante, definire "staticamente" il valore senza che esso sia parametrizzato (mediante una variabile), rende l'applicazione estremamente rigida e scarsamente "testabile".
+
+Sì, capisco che al metodo run() non sia possibile passare parametri direttamente (è ereditato dalla classe Thread e, oltretutto, non è direttamente eseguibile, se non mediante l'invocazione *start*), tuttavia potete impiegare alcune alternative:
+
+1. Utilizzare direttamente il costruttore. Tuttavia, come già detto in precedenza, questa possibilità, se pur non errata, potrebbe essere impropria da un punto di vista concettuale. Ovvero: uno spettatore "esiste" anagraficamente (e ne viene dunque creata un'istanza mediante il costruttore di classe) a prescindere dal posto in platea che occuperà; questa informazione può essere attribuita in un secondo momento (ed ecco che si delinea la seconda ipotesi).
+2. Utilizzare un metodo di supporto. Ovvero, volgarmente una specie di "secondo costruttore", oppure uno o più metodi set, al fine di attribuire i parametri richiesti dalla prenotazione, cioè: la platea e le coordinate del posto da prenotare.
+
+Altro aspetto **importante** da considerare nell'istruzione `p.prenota(S, 12);`. Cos'è `S`? Sicuramente una variabile di istanza di tipo Spettatore, poiché abbiamo la seguente istruzione dichiarativa, in testa alla classe: `private Spettatore S;`. Tuttavia, quando viene valorizzata `S`? Beh, **mai**! Dunque `S` non è un riferimento esplicito all'istanza corrente, bensì una variabile impostata a null (volgarmente: un oggetto vuoto).
+
+Per raggiungere lo scopo preposto, è necessario utilizzare la keyword **this**. Lo snippet di codice formalmente corretto (al netto delle riflessioni sul valore numerico `12`, fatte in precedenza), è il seguente:
+
+```java
+public void run() {
+    p.prenota(this, 12);
+}
+```
+
+### Classe Platea
+
+```java
+public class Platea {
+    private Spettatore M[][];
+    private MySemaphore semaphore;
+    
+    public Platea(MySemaphore semaphore) {
+        this.semaphore = semaphore;
+        M = new Spettatore [5][5];
+    }
+    
+    public void visualizzaMatrice() {
+        for(int I = 0; I < 5; I++) {
+            for(int J = 0; J < 5; J++) {
+                if(M[I][J] == null)
+                    System.out.print("|          |");
+                else
+                    System.out.print("| " + M[I][J].getNome() + " |");
+            }
+            System.out.println("");
+            System.out.println("");
+        }
+    }
+    
+    public void prenota(Spettatore S, int posto) {
+        semaphore.P();
+        for(int I = 0; I < 5; I++)
+            for(int J = 0; J < 5; J++) {
+                if(I == posto / 5 && J == posto % 5) 
+                    if(M[I][J] == null) 
+                        M[I][J] = S;
+                    else
+                        System.out.println("Il posto è già prenotato!!!");
+            }
+        semaphore.V();
+    }
+}
+```
+
+**Osservazioni.**
+
+Direi di sofferemarci in particolare sul metodo prenota. Come discusso in precedenza, è buona norma ridurre il numero di istruzioni contenute all'interno della sezione critica (delimitata dalle invocazioni semaforiche). La, stampa a video, dunque, può/dovrebbe essere spostata all'esterno della sezione critica.
+
+Inoltre, ricordiamo che il posto è rappresentato da un unico valore numerico nel range [0,24], piuttosto che da una coppia di coordinate (i.j). Tuttavia, perché usare una coppia di cicli for annidati? È davvero necessario sfogliare l'intera matrice? Direi di no. Basta "giocare" con le operazioni aritmetiche di divisione e modulo, esattamente come intuito dallo studente.
+
+Le coordinate del posto 12, in una matrice 5x5 con indici (i,j) nel range [0,4], possono essere calcolate come segue:
+
+```java
+i = 12 / 5;
+j = 12 % 5;
+```
+
+### Classe MySemaphore
+
+Niente da segnalare: tale e quale all'implementazione condivisa e discussa in classe (semaforo di Dijkstra), che non riporto.

@@ -238,7 +238,7 @@ public class Teatro {
 
 Un paio di aspetti da segnalare. Uno più rilevante, l'altro più marginale. Rispettivamente:
 
-1. Dato che è il main ha definire "l'ordine degli eventi" (mediante istanziazione di oggetti e avvio di thread), mi aspetterei di trovare, oltre alla definizione del semaforo, della platea, e degli spettatori, anche un aspetto altrettanto importante: le coordinate (i,j) dei posti scelti. A tal proposito, prima di giungere ad una valutazione di merito definitiva, sarà opportuno ispezionare le altre classi.
+1. Dato che è il main a definire "l'ordine degli eventi" (mediante istanziazione di oggetti e avvio di thread), mi aspetterei di trovare, oltre alla definizione del semaforo, della platea, e degli spettatori, anche un aspetto altrettanto importante: le coordinate (i,j) dei posti scelti. A tal proposito, prima di giungere ad una valutazione di merito definitiva, sarà opportuno ispezionare le altre classi.
 2. Potrebbe essere utile effettuare, per quanto riguarda la situazione delle prenotazioni dei posti, delle stampe a video intermedie. Come detto in precedenza, ciò potrebbe necessitare un'attenta gestione dell'accesso in lettura alla struttura dati condivisa (dunque, questo aspetto è da considerarsi secondario).
 
 ### Classe Spettatore

@@ -718,7 +718,7 @@ public class Spettatore extends Thread{
 
 **Osservazioni.**
 
-L'assegnazione del posto in platea è *built-in* all'interno del metodo run(), ovvero: `p.prenota(S, 12);`, dove il valore numerico `12` rappresenta univocamente un posto tra i 25 posti disponibili (matrice 5x5). L'idea è senza dubbio interessante, poiché prevede l'utilizzo di un unico valore numerico, piuttosto che una coppia coordinate (i,j). Ciò nonostante, definire "staticamente" il valore senza che esso sia parametrizzato (mediante una variabile), rende l'applicazione estremamente rigida e scarsamente "testabile".
+L'assegnazione del posto in platea è *built-in* all'interno del metodo run(), ovvero: `p.prenota(S, 12);`, dove il valore numerico `12` rappresenta univocamente un posto tra i 25 posti disponibili (matrice 5x5). L'idea è senza dubbio interessante, poiché prevede l'utilizzo di un unico valore numerico, piuttosto che una coppia di coordinate (i,j). Ciò nonostante, definire "staticamente" il valore senza che esso sia parametrizzato (mediante una variabile), rende l'applicazione estremamente rigida e scarsamente "testabile".
 
 Sì, capisco che al metodo run() non sia possibile passare parametri direttamente (è ereditato dalla classe Thread e, oltretutto, non è direttamente eseguibile, se non mediante l'invocazione *start*), tuttavia potete impiegare alcune alternative:
 
@@ -777,7 +777,7 @@ public class Platea {
 
 **Osservazioni.**
 
-Direi di sofferemarci in particolare sul metodo prenota. Come discusso in precedenza, è buona norma ridurre il numero di istruzioni contenute all'interno della sezione critica (delimitata dalle invocazioni semaforiche). La, stampa a video, dunque, può/dovrebbe essere spostata all'esterno della sezione critica.
+Direi di sofferemarci in particolare sul metodo prenota. Come discusso in precedenza, è buona norma ridurre il numero di istruzioni contenute all'interno della sezione critica (delimitata dalle invocazioni semaforiche). La stampa a video, dunque, può/dovrebbe essere spostata all'esterno della sezione critica.
 
 Inoltre, ricordiamo che il posto è rappresentato da un unico valore numerico nel range [0,24], piuttosto che da una coppia di coordinate (i.j). Tuttavia, perché usare una coppia di cicli for annidati? È davvero necessario sfogliare l'intera matrice? Direi di no. Basta "giocare" con le operazioni aritmetiche di divisione e modulo, esattamente come intuito dallo studente.
 
